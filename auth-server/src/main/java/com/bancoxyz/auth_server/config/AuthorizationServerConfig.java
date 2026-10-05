@@ -12,6 +12,7 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -24,6 +25,9 @@ import org.springframework.security.oauth2.server.authorization.settings.ClientS
 
 @Configuration
 public class AuthorizationServerConfig {
+
+    @Value("${spring.security.oauth2.authorizationserver.issuer}")
+    private String issuer;
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
@@ -96,7 +100,7 @@ public class AuthorizationServerConfig {
     public AuthorizationServerSettings authorizationServerSettings() {
 
         return AuthorizationServerSettings.builder()
-                .issuer("http://localhost:9000")
+                .issuer(issuer)
                 .build();
     }
 }
