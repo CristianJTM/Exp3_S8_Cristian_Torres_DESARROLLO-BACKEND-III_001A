@@ -25,37 +25,50 @@
 
 	<dependencies>
 
+		<!-- ======================================== -->
 		<!-- Spring Batch -->
+		<!-- ======================================== -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-batch</artifactId>
 		</dependency>
 
+		<!-- ======================================== -->
 		<!-- Spring Batch JDBC -->
+		<!-- ======================================== -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-batch-jdbc</artifactId>
 		</dependency>
 
+		<!-- ======================================== -->
+		<!-- Spring Web -->
+		<!-- ======================================== -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+		<!-- ======================================== -->
 		<!-- Spring Data JPA -->
+		<!-- ======================================== -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 
+		<!-- ======================================== -->
 		<!-- MySQL -->
+		<!-- ======================================== -->
 		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- ======================================== -->
 		<!-- DevTools -->
+		<!-- ======================================== -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -63,7 +76,18 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- ======================================== -->
+		<!-- Lombok -->
+		<!-- ======================================== -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- ======================================== -->
 		<!-- Tests -->
+		<!-- ======================================== -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-batch-test</artifactId>
@@ -76,32 +100,34 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
-
 	</dependencies>
 
+	<!-- ======================================== -->
+	<!-- Build -->
+	<!-- ======================================== -->
 	<build>
 		<plugins>
+
+			<!-- Lombok annotation processor -->
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<excludes>
-						<exclude>
+					<annotationProcessorPaths>
+						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+
+			<!-- Spring Boot -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
 		</plugins>
 	</build>
 
