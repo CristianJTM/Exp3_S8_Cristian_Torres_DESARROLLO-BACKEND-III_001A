@@ -1,4 +1,8 @@
 services:
+
+  # ========================================
+  # MySQL
+  # ========================================
   mysql:
     image: mysql:8.4
     container_name: banco-xyz-mysql
@@ -13,5 +17,162 @@ services:
     volumes:
       - banco_xyz_data:/var/lib/mysql
 
+
+  # ========================================
+  # Config Server
+  # ========================================
+  config-server:
+    build:
+      context: ./config-server
+    container_name: banco-xyz-config-server
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+
+
+  # ========================================
+  # Discovery Server - Eureka
+  # ========================================
+  discovery-server:
+    build:
+      context: ./discovery-server
+    container_name: banco-xyz-discovery-server
+    restart: unless-stopped
+    depends_on:
+      - config-server
+    ports:
+      - "8761:8761"
+
+
+  # ========================================
+  # Auth Server
+  # ========================================
+  auth-server:
+    build:
+      context: ./auth-server
+    container_name: banco-xyz-auth-server
+    restart: unless-stopped
+    environment:
+      AUTH_SERVER_ISSUER: http://auth-server:9000
+    ports:
+      - "9000:9000"
+
+
+  # ========================================
+  # Backend Core
+  # ========================================
+  backend-core:
+    build:
+      context: ./backend-core
+    container_name: banco-xyz-backend-core
+    restart: unless-stopped
+    depends_on:
+      - mysql
+      - discovery-server
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/banco_xyz?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_USERNAME: banco_user
+      DB_PASSWORD: banco_password
+      EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+    ports:
+      - "8081:8081"
+
+
+  # ========================================
+  # BFF Web
+  # ========================================
+  bff-web:
+    build:
+      context: ./bff-web
+    container_name: banco-xyz-bff-web
+    restart: unless-stopped
+    depends_on:
+      - backend-core
+      - auth-server
+      - discovery-server
+    environment:
+      EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
+      AUTH_SERVER_URL: http://auth-server:9000
+    ports:
+      - "8082:8082"
+
+
+  # ========================================
+  # BFF Mobile
+  # ========================================
+  bff-mobile:
+    build:
+      context: ./bff-mobile
+    container_name: banco-xyz-bff-mobile
+    restart: unless-stopped
+    depends_on:
+      - backend-core
+      - auth-server
+      - discovery-server
+    environment:
+      EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
+      AUTH_SERVER_URL: http://auth-server:9000
+    ports:
+      - "8083:8083"
+
+
+  # ========================================
+  # BFF ATM
+  # ========================================
+  bff-atm:
+    build:
+      context: ./bff-atm
+    container_name: banco-xyz-bff-atm
+    restart: unless-stopped
+    depends_on:
+      - backend-core
+      - auth-server
+      - discovery-server
+    environment:
+      EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
+      AUTH_SERVER_URL: http://auth-server:9000
+    ports:
+      - "8084:8084"
+
+
+  # ========================================
+  # Auditoria Service
+  # ========================================
+  auditoria-service:
+    build:
+      context: ./auditoria-service
+    container_name: banco-xyz-auditoria-service
+    restart: unless-stopped
+    depends_on:
+      - discovery-server
+    environment:
+      EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
+      KAFKA_BOOTSTRAP_SERVERS: ${KAFKA_BOOTSTRAP_SERVERS}
+    ports:
+      - "8086:8086"
+
+
+  # ========================================
+  # Banco Batch
+  # ========================================
+  banco-batch:
+    build:
+      context: ./banco-batch
+    container_name: banco-xyz-batch
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/banco_xyz?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: banco_user
+      SPRING_DATASOURCE_PASSWORD: banco_password
+    ports:
+      - "8080:8080"
+
+
+# ========================================
+# Volumes
+# ========================================
 volumes:
   banco_xyz_data:
