@@ -167,6 +167,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/banco_xyz?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: banco_user
       SPRING_DATASOURCE_PASSWORD: banco_password
+    volumes:
+      - ./banco-batch/data:/app/data
     ports:
       - "8080:8080"
 
